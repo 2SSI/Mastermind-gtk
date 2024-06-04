@@ -1,0 +1,37 @@
+/*@define-color red  #ff0000;
+
+@define-color bleu #0400ff;
+
+
+
+@define-color jaune #ecff00;
+
+
+@define-color mauve #ab20fd;
+
+
+@define-color noir #000000;
+
+
+@define-color blanc #111111;
+
+
+@define-color vert #53ff00;
+
+
+@define-color orange #ff8700;
+
+
+*/
+
+
+
+#myValider{
+    background-color: green;
+    color: white;
+    /*font-family: DejaVu Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 15px;*/
+}

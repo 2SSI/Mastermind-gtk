@@ -1,37 +1,52 @@
-/*@define-color red  #ff0000;
-
+/* Définir les couleurs */
+@define-color rouge  #ff0000;
 @define-color bleu #0400ff;
-
-
-
 @define-color jaune #ecff00;
-
-
 @define-color mauve #ab20fd;
-
-
 @define-color noir #000000;
-
-
-@define-color blanc #111111;
-
-
+@define-color blanc #ffffff;
 @define-color vert #53ff00;
-
-
 @define-color orange #ff8700;
 
+/* Style pour les boutons combi */
+#combi-button {
+    border-radius: 60%;  /* Rendre les boutons ronds */
+    width: 30px;
+    height: 30px;
+    margin: 3px;
+}
 
-*/
+/* Style pour les boutons ind */
+.button-right {
+    min-width: 15px;
+    min-height: 15px;
+    margin: 2px;
+    background-color: #ff0000; /* Juste pour tester, couleur rouge */
+}
 
-
-
-#myValider{
-    background-color: green;
-    color: white;
-    /*font-family: DejaVu Sans;
-    font-style: normal;
+/* Style pour le bouton Valider */
+#myValider {
+    background-color: #41849e;  /* Couleur de fond plus claire */
+    color: #000000;  /*  
+    border: 2px solid #41849e;  
     font-weight: bold;
-    font-size: 20px;
-    border-radius: 15px;*/
+    font-size: 16px;
+    border-radius: 10px;
+    padding: 5px 10px;*/
+}
+
+/* Couleur de fond de la fenêtre principale */
+window {
+    background-color: #68b0cc;  /* Vert émeraude */
+}
+
+/* Style pour les boutons en haut à gauche */
+#menu-button {
+    background-color: #68b0cc;
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    margin: 2px;
+    border-radius: 5px;
 }

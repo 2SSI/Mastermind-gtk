@@ -1,4 +1,3 @@
-/* Définir les couleurs */
 @define-color rouge  #ff0000;
 @define-color bleu #0400ff;
 @define-color jaune #ecff00;
@@ -8,45 +7,42 @@
 @define-color vert #53ff00;
 @define-color orange #ff8700;
 
-/* Style pour les boutons combi */
-#combi-button {
-    border-radius: 60%;  /* Rendre les boutons ronds */
-    width: 30px;
-    height: 30px;
+#myCombi {
+    border-radius: 50%;  
+    width: 20px;
+    height: 20px;
     margin: 3px;
 }
 
-/* Style pour les boutons ind */
-.button-right {
-    min-width: 15px;
-    min-height: 15px;
-    margin: 2px;
-    background-color: #ff0000; /* Juste pour tester, couleur rouge */
+#myInd {
+    border-radius: 10%;  
+    width: 15px;
+    height: 25px;
+    margin: 5px;
 }
 
-/* Style pour le bouton Valider */
-#myValider {
-    background-color: #41849e;  /* Couleur de fond plus claire */
-    color: #000000;  /*  
+#myValider, #mySupprimer {
+    background-color: #41849e;  
+    color: #000000;  
     border: 2px solid #41849e;  
-    font-weight: bold;
-    font-size: 16px;
+    font-size: 14px;
     border-radius: 10px;
-    padding: 5px 10px;*/
+    padding: 5px 10px;
+    margin: 5px;
+    margin-bottom: 20px 30px;
+
 }
 
-/* Couleur de fond de la fenêtre principale */
 window {
-    background-color: #68b0cc;  /* Vert émeraude */
+    background-color: #68b0cc;  
+    padding: 30px;
 }
 
-/* Style pour les boutons en haut à gauche */
-#menu-button {
-    background-color: #68b0cc;
-    border: none;
-    color: white;
+
+#myMastermindTitre {
+    font-size: 24px;
     font-weight: bold;
-    padding: 10px;
-    margin: 2px;
-    border-radius: 5px;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 70px;
 }

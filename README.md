@@ -1,18 +1,18 @@
 # Mastermind-gtk
 
-Graphic user interface of mastermind game in C usign GTK 3.0.
+Graphic user interface of mastermind game in C using [GTK 3.0](https://www.gtk.org/docs/installations/index).
 
 ## Try it out
 
-* For Linux, download the third version of GTK 
+For Linux, download the third version of [GTK](https://www.gtk.org/docs/installations/index)
 
         make
         ./mastermind-demo.exe
   
-* For Windows
+For Windows
 
 Upcoming soon!
 
-* For MacOS
+For MacOS
 
 Upcoming soon!

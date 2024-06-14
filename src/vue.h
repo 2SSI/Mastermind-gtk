@@ -1,38 +1,43 @@
 #ifndef VUE_H
-
 #define VUE_H
 
 #include "combinaison.h"
 #include "stat-essai.h"
 #include "mastermind.h"
 #include <gtk/gtk.h>
+#include "common.h"
 
+typedef struct {
+    GtkButton* button;
+    int color_index;
+} buttondata_t;
 
-typedef struct{
-	GtkWindow* f;
-	GtkBox* b_main;
-	GtkBox* b_choix;
-	GtkBox* b_plateau;
-	GtkBox* b_gauche;
-	GtkBox* b_droite;
-	GtkBox* b_essai[NB_ESSAIS + 1];
-	GtkButton* combi[TAILLE_COMBI];
-	
-	GtkButton* button_essai[NB_ESSAIS + 1][TAILLE_COMBI];
-	
-	GtkBox* b_ind[NB_ESSAIS + 1];
-	GtkButton* button_ind[TAILLE_COMBI];
-	GtkButton* valider;
-}vue_t;
+typedef struct {
+    GtkWindow* f;
+    GtkBox* b_main;
+    GtkBox* b_choix;
+    GtkBox* b_plateau;
+    GtkBox* b_gauche;
+    GtkBox* b_droite;
+    GtkBox* b_essai[NB_ESSAIS + 1];
+    buttondata_t combi[NB_ESSAIS + 1][TAILLE_COMBI];
+    GtkBox* b_ind[NB_ESSAIS + 1];
+    GtkButton* button_ind[NB_ESSAIS + 1][TAILLE_COMBI];
+    GtkButton* valider;
+} vue_t;
 
+/*
+const char *colors[] = {
+    "red", "green", "blue", "magenta", 
+    "orange", "yellow", "white", "black"
+};*/
 
-void init_vue(vue_t*);
+vue_t* init_vue();
 void lib_vue(vue_t*);
-
-//void design_interface(vue_t*);
-
-
-
+void on_button_clicked(GtkWidget*, gpointer);
+void set_color(vue_t*, int);
+void on_regles_clicked(GtkWidget*, gpointer);
+void valider_essai_actuel(GtkWidget*, gpointer );
 
 
 #endif

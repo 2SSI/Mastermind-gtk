@@ -6,17 +6,15 @@
 
 
 ctrl_t ctrl_construire(){
-	mastermind m;
-	vue_t* vue;
-	ctrl_t c;
-	
-	mastermind_initialiser(&m);
-	vue = init_vue();
-	
-	c.m = m;
-	c.vue = vue;
-	
-	return c;
+    mastermind m;
+    vue_t* vue;
+    ctrl_t c;
+    mastermind_initialiser(&m);
+    vue = init_vue();
+    disable_all(vue);  
+    c.m = m;
+    c.vue = vue;
+    return c;
 }
 
 
@@ -25,7 +23,6 @@ void lib_ctrl(ctrl_t* c){
 	if(c != NULL)
 		free(c);
 }
-
 
 ctrl_t ctrl_color(ctrl_t c){
 	if(mastermind_get_etat(&c.m) == ETAT_MM_SECRET){
@@ -39,19 +36,17 @@ ctrl_t ctrl_color(ctrl_t c){
 	return c;
 }
 
-
-
 void disable_all(vue_t* vue) {
-    for (int i = 0; i < NB_ESSAIS; i++) {
-        for (int j = 0; j < TAILLE_COMBI; j++) {
-            gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[i][j].button), FALSE);
-            gtk_widget_set_sensitive(GTK_WIDGET(vue->button_ind[i][j]), FALSE);
+    for (int i = 0; i < NB_ESSAIS; i++) {  
+        if (i != NB_ESSAIS) {  
+            for (int j = 0; j < TAILLE_COMBI; j++) {  
+                gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[i][j].button), FALSE);
+            }
         }
     }
-    for (int j = 0; j < TAILLE_COMBI; j++) {
-        gtk_widget_set_sensitive(GTK_WIDGET(vue->button_ind[NB_ESSAIS][j]), FALSE);
-    }
 }
+
+
 
 void enable(vue_t* vue, int nb_boite) {
     if (valider_choix(vue, nb_boite + 1) == 1) {
@@ -63,7 +58,7 @@ void enable(vue_t* vue, int nb_boite) {
 
 int valider_choix(vue_t* vue, int nb_boite) {
     int tot = 0;
-    for (int i = 0; i < TAILLE_COMBI; i++) {
+    for (int i = 0 ; i < TAILLE_COMBI+1; i++) {
         if (vue->combi[nb_boite][i].color_index != -1) {
             tot++;
         }
@@ -77,5 +72,5 @@ int valider_choix(vue_t* vue, int nb_boite) {
 
 void on_valider_clicked(GtkWidget *widget, gpointer data) {
     GtkWidget *essai_box = GTK_WIDGET(data);
-    gtk_widget_set_sensitive(essai_box, FALSE);
+    gtk_widget_set_sensitive(essai_box, FALSE);  
 }

@@ -1,12 +1,104 @@
-@define-color rouge  #ff0000;
-@define-color bleu #0400ff;
-@define-color jaune #ecff00;
-@define-color mauve #ab20fd;
-@define-color noir #000000;
-@define-color blanc #ffffff;
-@define-color vert #53ff00;
-@define-color orange #ff8700;
+/*@define-color combi-rouge  #ff0000;
+@define-color combi-bleu #0400ff;
+@define-color combi-jaune #ecff00;
+@define-color combi-mauve #ab20fd;
+@define-color combi-noir #000000;
+@define-color combi-blanc #ffffff;
+@define-color combi-vert #53ff00;
+@define-color combi-orange #ff8700;*/
 
+#myCombi {
+    border-radius: 50%;  
+    width: 20px;
+    height: 20px;
+    margin: 3px;
+}
+
+#combi-rouge {
+    background-color: #ff0000;    
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    margin: 3px;
+}
+
+#combi-bleu{
+    background-color: #0400ff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    margin: 3px;
+}
+#combi-jaune {
+    background-color: #ecff00;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    margin: 3px;
+}
+#combi-mauve {
+    background-color: #ab20fd;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    margin: 3px;
+}
+#combi-noir {
+    background-color: #000000;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    margin: 3px;
+}
+#combi-blanc {
+    background-color: #ffffff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    margin: 3px;
+}
+#combi-vert {
+    background-color: #53ff00;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    margin: 3px;
+}
+#combi-orange{
+    background-color: #ff8700;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    margin: 3px;
+}
+
+
+#myInd {
+    border-radius: 10%;  
+    width: 15px;
+    height: 25px;
+    margin: 5px;
+}
+
+#myValider {
+    background-color: #41849e;  
+    color: #000000;  
+    border: 2px solid #41849e;  
+    font-size: 14px;
+    border-radius: 10px;
+    padding: 5px 10px;
+    margin: 5px;
+    margin-bottom: 20px 30px;
+
+}
+
+window {
+    background-color: #68b0cc;  
+    padding: 30px;
+}
+
+
+/*
 #myCombi {
     border-radius: 50%;  
     width: 20px;
@@ -45,4 +137,4 @@ window {
     color: #ffffff;
     text-align: center;
     margin-bottom: 70px;
-}
+}*/

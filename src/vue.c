@@ -1,12 +1,10 @@
 #include "vue.h"
 #include <gtk/gtk.h>
-
 #include "combinaison.h"
 #include "stat-essai.h"
 #include "mastermind.h"
-
-
 #include "common.h"
+
 const char *colors[] = {
     "red", "green", "blue", "magenta", 
     "orange", "yellow", "white", "black"
@@ -14,63 +12,127 @@ const char *colors[] = {
 
 vue_t* init_vue() {
     vue_t* vue = (vue_t*) malloc(sizeof(vue_t));
-
     if (vue == NULL) {
         perror("échec malloc");
         exit(-1);
     }
-
     vue->f = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(vue->f, "Mastermind");
     gtk_window_set_default_size(vue->f, 800, 900);
+    gtk_window_set_resizable(GTK_WINDOW(vue->f), FALSE);
 
+
+
+    GtkCssProvider *provider = gtk_css_provider_new();
+    gtk_css_provider_load_from_data(provider, "button { transition: background-color 0.3s ease; }", -1, NULL);
+    GtkStyleContext *context = gtk_widget_get_style_context(GTK_WIDGET(vue->f));
+    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    g_object_unref(provider);
+
+    // conteneur vertical global
+    GtkWidget *vbox_global = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    gtk_container_add(GTK_CONTAINER(vue->f), vbox_global);
+
+    // boîte horizontale pour le score, centrée
+    GtkWidget *hbox_score = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    GtkWidget *score_label = gtk_label_new("Score");
+    gtk_widget_set_halign(score_label, GTK_ALIGN_CENTER);  //centre le label horizontalement
+    gtk_box_pack_start(GTK_BOX(hbox_score), score_label, TRUE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_global), hbox_score, FALSE, FALSE, 10);
+
+    // configuration principale
     vue->b_main = (GtkBox*) gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    gtk_box_pack_start(GTK_BOX(vbox_global), GTK_WIDGET(vue->b_main), TRUE, TRUE, 0);
+
     vue->b_choix = (GtkBox*) gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-    vue->b_plateau = (GtkBox*) gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    vue->b_plateau = (GtkBox*) gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 30);
 
     vue->b_gauche = (GtkBox*) gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     vue->b_droite = (GtkBox*) gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
+    GtkWidget *vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  //boîte verticale pour les boutons
+
     for (int i = 0; i < NB_ESSAIS + 1; i++) {
-        vue->b_essai[i] = (GtkBox*) gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-        vue->b_ind[i] = (GtkBox*) gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+        vue->b_essai[i] = (GtkBox*) gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+        vue->b_ind[i] = (GtkBox*) gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
 
         for (int j = 0; j < TAILLE_COMBI; j++) {
             vue->combi[i][j].button = (GtkButton*) gtk_button_new();
             vue->combi[i][j].color_index = COULEUR_INDETERMINEE;
-            //gtk_widget_set_name(GTK_WIDGET(vue->combi[i][j].button), "myCombi");
+            gtk_widget_set_size_request(GTK_WIDGET(vue->combi[i][j].button), 40, 40);
             gtk_box_pack_start(vue->b_essai[i], GTK_WIDGET(vue->combi[i][j].button), TRUE, TRUE, 0);
+            char button_id[32];
+            snprintf(button_id, sizeof(button_id), "button%d_%d", i, j); //création d'un ID unique pour chaque bouton
+            gtk_widget_set_name(GTK_WIDGET(vue->combi[i][j].button), button_id);
+
+            if (i == 0) {
+                gtk_button_set_label(vue->combi[i][j].button, "?");
+                gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[i][j].button), FALSE);
+            }
 
             vue->button_ind[i][j] = (GtkButton*) gtk_button_new();
-            //gtk_widget_set_name(GTK_WIDGET(vue->button_ind[i][j]), "myInd");
-            gtk_box_pack_start(vue->b_ind[i], GTK_WIDGET(vue->button_ind[i][j]), TRUE, TRUE, 0);
+            gtk_widget_set_size_request(GTK_WIDGET(vue->button_ind[i][j]), 10, 40);
+            gtk_widget_set_sensitive(GTK_WIDGET(vue->button_ind[i][j]), FALSE);
+            gtk_box_pack_start(vue->b_ind[i], GTK_WIDGET(vue->button_ind[i][j]), FALSE, FALSE, 0);
+
+
+            g_signal_connect(G_OBJECT(vue->combi[i][j].button), "clicked", G_CALLBACK(set_color), &vue);
+
         }
         gtk_box_pack_start(vue->b_gauche, GTK_WIDGET(vue->b_essai[i]), TRUE, TRUE, 0);
         gtk_box_pack_start(vue->b_droite, GTK_WIDGET(vue->b_ind[i]), TRUE, TRUE, 0);
+        
+        // Gestion des marges 
+        gtk_widget_set_margin_start(GTK_WIDGET(vue->b_main), 20); //Marge à gauche
+        gtk_widget_set_margin_end(GTK_WIDGET(vue->b_main), 10);   //Marge à droite
+        gtk_widget_set_margin_top(GTK_WIDGET(vue->b_main), 10);   //Marge en haut
+        gtk_widget_set_margin_bottom(GTK_WIDGET(vue->b_main), 20); //Marge en bas    
     }
 
-    GtkWidget *titre = gtk_label_new("Mastermind");
-    //gtk_widget_set_name(titre, "myMastermindTitre");
-    gtk_box_pack_start(vue->b_choix, titre, TRUE, FALSE, 0);
+    GtkWidget *btn_rejouer = gtk_button_new_with_label("Rejouer");
+    GtkWidget *btn_regles = gtk_button_new_with_label("Règles");
+    g_signal_connect(G_OBJECT(btn_regles), "clicked", G_CALLBACK(on_regles_clicked), &vue);
+    GtkWidget *btn_valider = gtk_button_new_with_label("Valider");
+    g_signal_connect(G_OBJECT(btn_valider), "clicked", G_CALLBACK(valider_essai_actuel), &vue);
+    GtkWidget *btn_abandonner = gtk_button_new_with_label("Abandonner");
+    GtkWidget *btn_mode = gtk_button_new_with_label("Mode");
 
-    vue->valider = (GtkButton*) gtk_button_new_with_label("Valider");
-    //gtk_widget_set_name(GTK_WIDGET(vue->valider), "myValider");
-    gtk_box_pack_start(vue->b_choix, GTK_WIDGET(vue->valider), TRUE, FALSE, 0);
+    // aille uniforme pour les boutons 
+    int button_width = 150;  //Longueur uniforme
+    int button_height = 30;  //Hauteur uniforme
+    gtk_widget_set_size_request(btn_rejouer, button_width, button_height);
+    gtk_widget_set_size_request(btn_regles, button_width, button_height);
+    gtk_widget_set_size_request(btn_valider, button_width, button_height);
+    gtk_widget_set_size_request(btn_abandonner, button_width, button_height);
+    gtk_widget_set_size_request(btn_mode, button_width, button_height);
 
+    //Alignement des boutons au centre 
+    gtk_widget_set_halign(btn_rejouer, GTK_ALIGN_CENTER);
+    gtk_widget_set_halign(btn_regles, GTK_ALIGN_CENTER);
+    gtk_widget_set_halign(btn_valider, GTK_ALIGN_CENTER);
+    gtk_widget_set_halign(btn_abandonner, GTK_ALIGN_CENTER);
+    gtk_widget_set_halign(btn_mode, GTK_ALIGN_CENTER);
+
+    //Insertion des boutons dans la boîte verticale
+    gtk_box_pack_start(GTK_BOX(vbox_buttons), btn_rejouer, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_buttons), btn_regles, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_buttons), btn_valider, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_buttons), btn_abandonner, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_buttons), btn_mode, FALSE, FALSE, 0);
+
+    //Ajout de la boîte verticale à la vue
+    gtk_box_pack_start(GTK_BOX(vue->b_choix), vbox_buttons, TRUE, FALSE, 0);
     gtk_box_pack_start(vue->b_plateau, GTK_WIDGET(vue->b_gauche), TRUE, TRUE, 0);
     gtk_box_pack_start(vue->b_plateau, GTK_WIDGET(vue->b_droite), TRUE, TRUE, 0);
-
     gtk_box_pack_start(vue->b_main, GTK_WIDGET(vue->b_choix), TRUE, TRUE, 0);
     gtk_box_pack_start(vue->b_main, GTK_WIDGET(vue->b_plateau), TRUE, TRUE, 0);
-
     gtk_container_add(GTK_CONTAINER(vue->f), GTK_WIDGET(vue->b_main));
 
     return vue;
 }
 
-void lib_vue(vue_t* vue){
-	if(vue != NULL)
-		free(vue);
+void lib_vue(vue_t* vue) {
+    if (vue != NULL) free(vue);
 }
 
 void on_button_clicked(GtkWidget *widget, gpointer data) {
@@ -79,7 +141,7 @@ void on_button_clicked(GtkWidget *widget, gpointer data) {
 
     GtkCssProvider *provider = gtk_css_provider_new();
     char css[256];
-    snprintf(css, sizeof(css), "#button%d { background-color: %s; }", GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button_data->button), "button-id")), colors[button_data->color_index]);
+    snprintf(css, sizeof(css), "#button%d { background : %s; }", GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button_data->button), "button-id")), colors[button_data->color_index]);
 
     gtk_css_provider_load_from_data(provider, css, -1, NULL);
     GtkStyleContext *context = gtk_widget_get_style_context(GTK_WIDGET(button_data->button));
@@ -87,10 +149,6 @@ void on_button_clicked(GtkWidget *widget, gpointer data) {
 
     g_object_unref(provider);
 }
-
-
-
-
 
 void set_color(vue_t* vue, int num) {
 		for (int j = 0; j < TAILLE_COMBI; j++) {
@@ -110,7 +168,7 @@ void set_color(vue_t* vue, int num) {
 			char css[256];
 			
 			if(vue->combi[num][j].color_index != COULEUR_INDETERMINEE)
-				snprintf(css, sizeof(css), "#button%d { background-color: %s; }", j, colors[vue->combi[num][j].color_index]);
+				snprintf(css, sizeof(css), "#button%d { background: %s; }", j, colors[vue->combi[num][j].color_index]);
 
 			gtk_css_provider_load_from_data(provider, css, -1, NULL);
 			GtkStyleContext *context = gtk_widget_get_style_context(GTK_WIDGET(vue->combi[num][j].button));
@@ -118,4 +176,44 @@ void set_color(vue_t* vue, int num) {
 
 			g_object_unref(provider);
 		}
+}
+	
+void on_regles_clicked(GtkWidget *widget, gpointer data) {
+    //vue_t *vue = (vue_t *)data;
+    GtkWidget *popup = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(popup), "Règles du jeu");
+    gtk_window_set_default_size(GTK_WINDOW(popup), 800, 900);
+
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("./regles.png", NULL);
+    GdkPixbuf *scaled_pixbuf = gdk_pixbuf_scale_simple(pixbuf, 800, 900, GDK_INTERP_BILINEAR);
+
+    GtkWidget *background_image = gtk_image_new_from_pixbuf(scaled_pixbuf);
+    gtk_container_add(GTK_CONTAINER(popup), background_image);
+
+    g_object_unref(G_OBJECT(pixbuf));
+    g_object_unref(G_OBJECT(scaled_pixbuf));
+
+    gtk_widget_show_all(popup);
+}
+
+
+void valider_essai_actuel(GtkWidget *widget, gpointer data) {
+    int num = NB_ESSAIS;
+    vue_t *vue = (vue_t *)data;
+
+    for (int i = 0; i < TAILLE_COMBI; i++) {
+        if (vue->combi[num][i].color_index == COULEUR_INDETERMINEE) {
+            return;
+        }
+    }
+
+    for (int i = 0; i < TAILLE_COMBI; i++) {
+        gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[num][i].button), FALSE);
+    }
+
+    for (int i = 0; i < TAILLE_COMBI; i++) {
+        gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[num - 1][i].button), TRUE);
+    }
+
+    num--;
 }

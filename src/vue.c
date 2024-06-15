@@ -27,18 +27,18 @@ vue_t* init_vue() {
     gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     g_object_unref(provider);
 
-    // conteneur vertical global
+    // Conteneur vertical global
     GtkWidget *vbox_global = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(vue->f), vbox_global);
 
-    // boîte horizontale pour le score, centrée
+    // Création de la boîte horizontale pour le score, centrée
     GtkWidget *hbox_score = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     GtkWidget *score_label = gtk_label_new("Score");
-    gtk_widget_set_halign(score_label, GTK_ALIGN_CENTER);  //centre le label horizontalement
+    gtk_widget_set_halign(score_label, GTK_ALIGN_CENTER); 
     gtk_box_pack_start(GTK_BOX(hbox_score), score_label, TRUE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox_global), hbox_score, FALSE, FALSE, 10);
 
-    // configuration principale
+    // Configuration principale
     vue->b_main = (GtkBox*) gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
     gtk_box_pack_start(GTK_BOX(vbox_global), GTK_WIDGET(vue->b_main), TRUE, TRUE, 0);
 
@@ -48,7 +48,7 @@ vue_t* init_vue() {
     vue->b_gauche = (GtkBox*) gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     vue->b_droite = (GtkBox*) gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
-    GtkWidget *vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  //boîte verticale pour les boutons
+    GtkWidget *vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
 
     for (int i = 0; i < NB_ESSAIS + 1; i++) {
         vue->b_essai[i] = (GtkBox*) gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
@@ -60,7 +60,7 @@ vue_t* init_vue() {
             gtk_widget_set_size_request(GTK_WIDGET(vue->combi[i][j].button), 40, 40);
             gtk_box_pack_start(vue->b_essai[i], GTK_WIDGET(vue->combi[i][j].button), TRUE, TRUE, 0);
             char button_id[32];
-            snprintf(button_id, sizeof(button_id), "button%d_%d", i, j); //création d'un ID unique pour chaque bouton
+            snprintf(button_id, sizeof(button_id), "button%d_%d", i, j); 
             gtk_widget_set_name(GTK_WIDGET(vue->combi[i][j].button), button_id);
 
             if (i == 0) {
@@ -81,44 +81,47 @@ vue_t* init_vue() {
         gtk_box_pack_start(vue->b_droite, GTK_WIDGET(vue->b_ind[i]), TRUE, TRUE, 0);
         
         // Gestion des marges 
-        gtk_widget_set_margin_start(GTK_WIDGET(vue->b_main), 20); //Marge à gauche
-        gtk_widget_set_margin_end(GTK_WIDGET(vue->b_main), 10);   //Marge à droite
-        gtk_widget_set_margin_top(GTK_WIDGET(vue->b_main), 10);   //Marge en haut
-        gtk_widget_set_margin_bottom(GTK_WIDGET(vue->b_main), 20); //Marge en bas    
+        gtk_widget_set_margin_start(GTK_WIDGET(vue->b_main), 20); 
+        gtk_widget_set_margin_end(GTK_WIDGET(vue->b_main), 10);  
+        gtk_widget_set_margin_top(GTK_WIDGET(vue->b_main), 10);  
+        gtk_widget_set_margin_bottom(GTK_WIDGET(vue->b_main), 20);    
     }
 
     GtkWidget *btn_rejouer = gtk_button_new_with_label("Rejouer");
     GtkWidget *btn_regles = gtk_button_new_with_label("Règles");
-    g_signal_connect(G_OBJECT(btn_regles), "clicked", G_CALLBACK(on_regles_clicked), &vue);
     GtkWidget *btn_valider = gtk_button_new_with_label("Valider");
-    g_signal_connect(G_OBJECT(btn_valider), "clicked", G_CALLBACK(valider_essai_actuel), &vue);
     GtkWidget *btn_abandonner = gtk_button_new_with_label("Abandonner");
     GtkWidget *btn_mode = gtk_button_new_with_label("Mode");
 
-    // aille uniforme pour les boutons 
-    int button_width = 150;  //Longueur uniforme
-    int button_height = 30;  //Hauteur uniforme
+    g_signal_connect(G_OBJECT(btn_regles), "clicked", G_CALLBACK(on_regles_clicked), &vue);
+    g_signal_connect(G_OBJECT(btn_valider), "clicked", G_CALLBACK(valider_essai_actuel), &vue);
+    g_signal_connect(G_OBJECT(btn_abandonner), "clicked", G_CALLBACK(on_abandonner_clicked), &vue);
+    g_signal_connect(G_OBJECT(btn_mode), "clicked", G_CALLBACK(on_mode_clicked), &vue);
+
+    // Taille uniforme pour les boutons 
+    int button_width = 150;  
+    int button_height = 30; 
     gtk_widget_set_size_request(btn_rejouer, button_width, button_height);
     gtk_widget_set_size_request(btn_regles, button_width, button_height);
     gtk_widget_set_size_request(btn_valider, button_width, button_height);
     gtk_widget_set_size_request(btn_abandonner, button_width, button_height);
     gtk_widget_set_size_request(btn_mode, button_width, button_height);
 
-    //Alignement des boutons au centre 
+    // Alignement des boutons au centre 
     gtk_widget_set_halign(btn_rejouer, GTK_ALIGN_CENTER);
     gtk_widget_set_halign(btn_regles, GTK_ALIGN_CENTER);
     gtk_widget_set_halign(btn_valider, GTK_ALIGN_CENTER);
     gtk_widget_set_halign(btn_abandonner, GTK_ALIGN_CENTER);
     gtk_widget_set_halign(btn_mode, GTK_ALIGN_CENTER);
 
-    //Insertion des boutons dans la boîte verticale
+    // Insertion des boutons dans la boîte verticale
     gtk_box_pack_start(GTK_BOX(vbox_buttons), btn_rejouer, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox_buttons), btn_regles, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox_buttons), btn_valider, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox_buttons), btn_abandonner, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox_buttons), btn_mode, FALSE, FALSE, 0);
 
-    //Ajout de la boîte verticale à la vue
+    // Ajout de la boîte verticale à la vue
     gtk_box_pack_start(GTK_BOX(vue->b_choix), vbox_buttons, TRUE, FALSE, 0);
     gtk_box_pack_start(vue->b_plateau, GTK_WIDGET(vue->b_gauche), TRUE, TRUE, 0);
     gtk_box_pack_start(vue->b_plateau, GTK_WIDGET(vue->b_droite), TRUE, TRUE, 0);
@@ -150,9 +153,7 @@ void on_button_clicked(GtkWidget *widget, gpointer data) {
 
 void set_color(vue_t* vue, int num) {
 		for (int j = 0; j < TAILLE_COMBI; j++) {
-	    // vue->combi[i][j].color_index = (i+j) % NB_COULEURS;
-
-				// Set an ID for each button
+	        // vue->combi[i][j].color_index = (i+j) % NB_COULEURS;
 			char button_name[16];
 			snprintf(button_name, sizeof(button_name), "button%d", j);
 			gtk_widget_set_name(GTK_WIDGET(vue->combi[num][j].button), button_name);
@@ -219,11 +220,59 @@ void valider_essai_actuel(GtkWidget *widget, gpointer data) {
 
 // Initialise le modèle du jeu de mastermind
 
-void initialiser_combi(vue_t* vue)
+void initialiser_modele(vue_t* vue)
 {
     srand(time(NULL));
     mastermind_initialiser_avec_secret(&vue->mastermind);
 }
+
+// Evènements pour le bouton "Abandonner"
+
+void on_abandonner_clicked(GtkWidget *widget, gpointer data) {
+    GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(data),
+                                               GTK_DIALOG_MODAL,
+                                               GTK_MESSAGE_QUESTION,
+                                               GTK_BUTTONS_YES_NO,
+                                               "Voulez vous abandonner la partie ?");
+    gtk_window_set_title(GTK_WINDOW(dialog), "Confirmation d'abandon");
+
+    gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+    if (response == GTK_RESPONSE_YES) {
+        // Code pour gérer l'abandon de la partie (on dévoilera la combinaison mystère)
+    }
+
+    gtk_widget_destroy(dialog);
+}
+
+// Evènement pour le mode de jeu
+
+void on_mode_clicked(GtkWidget *widget, gpointer data) {
+    GtkWidget *dialog = gtk_dialog_new_with_buttons("Choisissez votre mode de jeu",
+                                                    GTK_WINDOW(data),
+                                                    GTK_DIALOG_MODAL,
+                                                    "Mode 1 : Joueur",
+                                                    1,
+                                                    "Mode 2 : Utilisateur",
+                                                    2,
+                                                    NULL);
+    gtk_window_set_title(GTK_WINDOW(dialog), "Mode de jeu");
+
+    gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+    switch (response) {
+        case 1:
+            // Code pour le Mode 1 : Joueur
+            break;
+        case 2:
+            // Code pour le Mode 2 : Utilisateur
+            break;
+        default:
+            // Aucune action si la boîte de dialogue est fermée autrement
+            break;
+    }
+
+    gtk_widget_destroy(dialog);
+}
+
 
 
 /*

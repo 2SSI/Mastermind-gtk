@@ -57,11 +57,21 @@ vue_t* init_vue() {
         for (int j = 0; j < TAILLE_COMBI; j++) {
             vue->combi[i][j].button = (GtkButton*) gtk_button_new();
             vue->combi[i][j].color_index = COULEUR_INDETERMINEE;
-            gtk_widget_set_size_request(GTK_WIDGET(vue->combi[i][j].button), 40, 40);
-            gtk_box_pack_start(vue->b_essai[i], GTK_WIDGET(vue->combi[i][j].button), TRUE, TRUE, 0);
+            //gtk_widget_set_size_request(GTK_WIDGET(vue->combi[i][j].button), 40, 40);
+            //gtk_box_pack_start(vue->b_essai[i], GTK_WIDGET(vue->combi[i][j].button), TRUE, TRUE, 0);
             char button_id[32];
             snprintf(button_id, sizeof(button_id), "button%d_%d", i, j); 
             gtk_widget_set_name(GTK_WIDGET(vue->combi[i][j].button), button_id);
+
+
+
+
+            gtk_widget_set_size_request(GTK_WIDGET(vue->combi[i][j].button), 40, 40); // Taille du bouton
+            gtk_box_pack_start(GTK_BOX(vue->b_essai[i]), GTK_WIDGET(vue->combi[i][j].button), TRUE, TRUE, 0);
+            g_signal_connect(GTK_WIDGET(vue->combi[i][j].button), "clicked", G_CALLBACK(on_combi_button_clicked), NULL);
+            g_object_set_data(G_OBJECT(GTK_WIDGET(vue->combi[i][j].button)), "color-index", GINT_TO_POINTER(0)); // Initialiser l'index de couleur
+
+
 
             if (i == 0) {
                 gtk_button_set_label(vue->combi[i][j].button, "?");
@@ -74,7 +84,7 @@ vue_t* init_vue() {
             gtk_box_pack_start(vue->b_ind[i], GTK_WIDGET(vue->button_ind[i][j]), FALSE, FALSE, 0);
 
 
-            g_signal_connect(G_OBJECT(vue->combi[i][j].button), "clicked", G_CALLBACK(set_color), &vue);
+            //g_signal_connect(G_OBJECT(vue->combi[i][j].button), "clicked", G_CALLBACK(set_color), &vue);
 
         }
         gtk_box_pack_start(vue->b_gauche, GTK_WIDGET(vue->b_essai[i]), TRUE, TRUE, 0);
@@ -136,6 +146,8 @@ void lib_vue(vue_t* vue) {
     if (vue != NULL) free(vue);
 }
 
+/*
+
 void on_button_clicked(GtkWidget *widget, gpointer data) {
     buttondata_t* button_data = (buttondata_t*) data;
     button_data->color_index = (button_data->color_index + 1) % NB_COULEURS;
@@ -177,6 +189,10 @@ void set_color(vue_t* vue, int num) {
 		}
 }
 	
+*/
+
+
+
 void on_regles_clicked(GtkWidget *widget, gpointer data) {
     //vue_t *vue = (vue_t *)data;
     GtkWidget *popup = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -219,7 +235,6 @@ void valider_essai_actuel(GtkWidget *widget, gpointer data) {
 
 
 // Initialise le modèle du jeu de mastermind
-
 void initialiser_modele(vue_t* vue)
 {
     srand(time(NULL));
@@ -227,7 +242,6 @@ void initialiser_modele(vue_t* vue)
 }
 
 // Evènements pour le bouton "Abandonner"
-
 void on_abandonner_clicked(GtkWidget *widget, gpointer data) {
     GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(data),
                                                GTK_DIALOG_MODAL,
@@ -245,7 +259,6 @@ void on_abandonner_clicked(GtkWidget *widget, gpointer data) {
 }
 
 // Evènement pour le mode de jeu
-
 void on_mode_clicked(GtkWidget *widget, gpointer data) {
     GtkWidget *dialog = gtk_dialog_new_with_buttons("Choisissez votre mode de jeu",
                                                     GTK_WINDOW(data),
@@ -274,6 +287,28 @@ void on_mode_clicked(GtkWidget *widget, gpointer data) {
 }
 
 
+
+void on_combi_button_clicked(GtkWidget *button, gpointer data) {
+    // Récupérer l'index actuel de la couleur
+    int color_index = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button), "color-index"));
+
+    // Incrémenter l'index pour changer de couleur
+    color_index = (color_index + 1) % (sizeof(colors) / sizeof(colors[0]));
+
+    // Mettre à jour l'index de la couleur dans les données associées au bouton
+    g_object_set_data(G_OBJECT(button), "color-index", GINT_TO_POINTER(color_index));
+
+    // Construire la chaîne CSS pour changer la couleur du bouton
+    char css[256];
+    snprintf(css, sizeof(css), "button { background: %s; }", colors[color_index]);
+
+    // Appliquer le CSS aux boutons
+    GtkCssProvider *css_provider = gtk_css_provider_new();
+    gtk_css_provider_load_from_data(css_provider, css, -1, NULL);
+    GtkStyleContext *context = gtk_widget_get_style_context(button);
+    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+    g_object_unref(css_provider);
+}
 
 /*
 void initialiser_dialog_box(vue_t* vue)

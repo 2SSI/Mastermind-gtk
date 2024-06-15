@@ -24,6 +24,7 @@ typedef struct {
     GtkBox* b_ind[NB_ESSAIS + 1];
     GtkButton* button_ind[NB_ESSAIS + 1][TAILLE_COMBI];
     GtkButton* valider;
+    mastermind mastermind;
 } vue_t;
 
 /*
@@ -33,11 +34,15 @@ const char *colors[] = {
 };*/
 
 vue_t* init_vue();
+
 void lib_vue(vue_t*);
 void on_button_clicked(GtkWidget*, gpointer);
 void set_color(vue_t*, int);
 void on_regles_clicked(GtkWidget*, gpointer);
 void valider_essai_actuel(GtkWidget*, gpointer );
+void initialliser_combi(vue_t* vue);
 
+//void afficher_fin_partie(GtkWidget*, vue_t*);
+//void initialiser_dialog_box(vue_t*);
 
 #endif

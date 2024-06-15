@@ -29,7 +29,7 @@ ctrl_t ctrl_color(ctrl_t c){
 		int num = mastermind_get_num_essai_encours(&c.m);
 		
 		if(valider_choix(c.vue, num) == 0){
-			set_color(c.vue, num);
+			//set_color(c.vue, num);
 		}
 		enable(c.vue, num);	
 	}

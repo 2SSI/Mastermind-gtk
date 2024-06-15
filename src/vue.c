@@ -16,6 +16,7 @@ vue_t* init_vue() {
         perror("échec malloc");
         exit(-1);
     }
+
     vue->f = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(vue->f, "Mastermind");
     gtk_window_set_default_size(vue->f, 800, 900);
@@ -63,15 +64,10 @@ vue_t* init_vue() {
             snprintf(button_id, sizeof(button_id), "button%d_%d", i, j); 
             gtk_widget_set_name(GTK_WIDGET(vue->combi[i][j].button), button_id);
 
-
-
-
             gtk_widget_set_size_request(GTK_WIDGET(vue->combi[i][j].button), 40, 40); // Taille du bouton
             gtk_box_pack_start(GTK_BOX(vue->b_essai[i]), GTK_WIDGET(vue->combi[i][j].button), TRUE, TRUE, 0);
             g_signal_connect(GTK_WIDGET(vue->combi[i][j].button), "clicked", G_CALLBACK(on_combi_button_clicked), NULL);
             g_object_set_data(G_OBJECT(GTK_WIDGET(vue->combi[i][j].button)), "color-index", GINT_TO_POINTER(0)); // Initialiser l'index de couleur
-
-
 
             if (i == 0) {
                 gtk_button_set_label(vue->combi[i][j].button, "?");
@@ -104,7 +100,7 @@ vue_t* init_vue() {
     GtkWidget *btn_mode = gtk_button_new_with_label("Mode");
 
     g_signal_connect(G_OBJECT(btn_regles), "clicked", G_CALLBACK(on_regles_clicked), &vue);
-    g_signal_connect(G_OBJECT(btn_valider), "clicked", G_CALLBACK(valider_essai_actuel), &vue);
+    //g_signal_connect(vue->valider, "clicked", G_CALLBACK(on_valider_clicked), vue);
     g_signal_connect(G_OBJECT(btn_abandonner), "clicked", G_CALLBACK(on_abandonner_clicked), &vue);
     g_signal_connect(G_OBJECT(btn_mode), "clicked", G_CALLBACK(on_mode_clicked), &vue);
 
@@ -146,53 +142,6 @@ void lib_vue(vue_t* vue) {
     if (vue != NULL) free(vue);
 }
 
-/*
-
-void on_button_clicked(GtkWidget *widget, gpointer data) {
-    buttondata_t* button_data = (buttondata_t*) data;
-    button_data->color_index = (button_data->color_index + 1) % NB_COULEURS;
-
-    GtkCssProvider *provider = gtk_css_provider_new();
-    char css[256];
-    snprintf(css, sizeof(css), "#button%d { background : %s; }", GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button_data->button), "button-id")), colors[button_data->color_index]);
-
-    gtk_css_provider_load_from_data(provider, css, -1, NULL);
-    GtkStyleContext *context = gtk_widget_get_style_context(GTK_WIDGET(button_data->button));
-    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-
-    g_object_unref(provider);
-}
-
-void set_color(vue_t* vue, int num) {
-		for (int j = 0; j < TAILLE_COMBI; j++) {
-	        // vue->combi[i][j].color_index = (i+j) % NB_COULEURS;
-			char button_name[16];
-			snprintf(button_name, sizeof(button_name), "button%d", j);
-			gtk_widget_set_name(GTK_WIDGET(vue->combi[num][j].button), button_name);
-
-			g_object_set_data(G_OBJECT(vue->combi[num][j].button), "button-id", GINT_TO_POINTER(j));
-
-			
-			g_signal_connect(G_OBJECT(vue->combi[num][j].button), "clicked", G_CALLBACK(on_button_clicked), &vue->combi[num][j]);
-
-            GtkCssProvider *provider = gtk_css_provider_new();
-            char css[256] = "";
-			
-			if(vue->combi[num][j].color_index != COULEUR_INDETERMINEE)
-				snprintf(css, sizeof(css), "#button%d { background: %s; }", j, colors[vue->combi[num][j].color_index]);
-
-			gtk_css_provider_load_from_data(provider, css, -1, NULL);
-			GtkStyleContext *context = gtk_widget_get_style_context(GTK_WIDGET(vue->combi[num][j].button));
-			gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-
-			g_object_unref(provider);
-		}
-}
-	
-*/
-
-
-
 void on_regles_clicked(GtkWidget *widget, gpointer data) {
     //vue_t *vue = (vue_t *)data;
     GtkWidget *popup = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -211,30 +160,7 @@ void on_regles_clicked(GtkWidget *widget, gpointer data) {
     gtk_widget_show_all(popup);
 }
 
-
-void valider_essai_actuel(GtkWidget *widget, gpointer data) {
-    int num = NB_ESSAIS;
-    vue_t *vue = (vue_t *)data;
-
-    for (int i = 0; i < TAILLE_COMBI; i++) {
-        if (vue->combi[num][i].color_index == COULEUR_INDETERMINEE) {
-            return;
-        }
-    }
-
-    for (int i = 0; i < TAILLE_COMBI; i++) {
-        gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[num][i].button), FALSE);
-    }
-
-    for (int i = 0; i < TAILLE_COMBI; i++) {
-        gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[num - 1][i].button), TRUE);
-    }
-
-    num--;
-}
-
-
-// Initialise le modèle du jeu de mastermind
+// Initialise le modèle/ la combinaison secrète du jeu de mastermind
 void initialiser_modele(vue_t* vue)
 {
     srand(time(NULL));
@@ -286,29 +212,66 @@ void on_mode_clicked(GtkWidget *widget, gpointer data) {
     gtk_widget_destroy(dialog);
 }
 
-
-
 void on_combi_button_clicked(GtkWidget *button, gpointer data) {
-    // Récupérer l'index actuel de la couleur
+
+    // Récupération de l'index actuel de la couleur
     int color_index = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button), "color-index"));
 
-    // Incrémenter l'index pour changer de couleur
+    // Incrémentation de l'index pour changer de couleur
     color_index = (color_index + 1) % (sizeof(colors) / sizeof(colors[0]));
 
-    // Mettre à jour l'index de la couleur dans les données associées au bouton
+    // Mise à jour de l'index de la couleur dans les données associées au bouton
     g_object_set_data(G_OBJECT(button), "color-index", GINT_TO_POINTER(color_index));
-
-    // Construire la chaîne CSS pour changer la couleur du bouton
     char css[256];
     snprintf(css, sizeof(css), "button { background: %s; }", colors[color_index]);
 
-    // Appliquer le CSS aux boutons
+    // Ajout du style CSS aux boutons
     GtkCssProvider *css_provider = gtk_css_provider_new();
     gtk_css_provider_load_from_data(css_provider, css, -1, NULL);
     GtkStyleContext *context = gtk_widget_get_style_context(button);
     gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
     g_object_unref(css_provider);
 }
+
+/*
+void enable(vue_t* vue, int essai_courant) {
+    if (valider_choix(vue, essai_courant)) {
+        // Désactiver les boutons de l'essai courant
+        for (int j = 0; j < TAILLE_COMBI; j++) {
+            gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[essai_courant][j].button), FALSE);
+        }
+        if (essai_courant > 0) { // s'assurer qu'on ne dépasse pas le nombre d'essais
+            for (int j = 0; j < TAILLE_COMBI; j++) {
+                gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[essai_courant-1][j].button), TRUE);
+            }
+        }
+    }
+}
+
+int valider_choix(vue_t* vue, int essai_courant) {
+    int tot = 0;
+    for (int i = 0; i < TAILLE_COMBI; i++) {
+        if (vue->combi[essai_courant][i].color_index != -1) {
+            tot++;
+        }
+    }
+    return (tot == TAILLE_COMBI);
+}
+
+
+void on_valider_clicked(GtkWidget *widget, gpointer data) {
+    vue_t *vue = (vue_t *)data;
+    int essai_courant = mastermind_get_num_essai_encours(&vue->mastermind); 
+    if (valider_choix(vue, essai_courant)) {
+        enable(vue, essai_courant - 1); // Pour activer l'essai suivant et désactiver l'actuel.
+    } else {
+        // Afficher un message d'erreur si la validation échoue
+        GtkWidget *error_dialog = gtk_message_dialog_new(vue->f, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "Erreur: Vous devez remplir tous les boutons avant de valider.");
+        gtk_dialog_run(GTK_DIALOG(error_dialog));
+        gtk_widget_destroy(error_dialog);
+    }
+}
+*/
 
 /*
 void initialiser_dialog_box(vue_t* vue)

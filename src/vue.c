@@ -21,8 +21,6 @@ vue_t* init_vue() {
     gtk_window_set_default_size(vue->f, 800, 900);
     gtk_window_set_resizable(GTK_WINDOW(vue->f), FALSE);
 
-
-
     GtkCssProvider *provider = gtk_css_provider_new();
     gtk_css_provider_load_from_data(provider, "button { transition: background-color 0.3s ease; }", -1, NULL);
     GtkStyleContext *context = gtk_widget_get_style_context(GTK_WIDGET(vue->f));
@@ -152,7 +150,7 @@ void on_button_clicked(GtkWidget *widget, gpointer data) {
 
 void set_color(vue_t* vue, int num) {
 		for (int j = 0; j < TAILLE_COMBI; j++) {
-	 //    		vue->combi[i][j].color_index = (i+j) % NB_COULEURS;
+	    // vue->combi[i][j].color_index = (i+j) % NB_COULEURS;
 
 				// Set an ID for each button
 			char button_name[16];
@@ -164,8 +162,8 @@ void set_color(vue_t* vue, int num) {
 			
 			g_signal_connect(G_OBJECT(vue->combi[num][j].button), "clicked", G_CALLBACK(on_button_clicked), &vue->combi[num][j]);
 
-			GtkCssProvider *provider = gtk_css_provider_new();
-			char css[256];
+            GtkCssProvider *provider = gtk_css_provider_new();
+            char css[256] = "";
 			
 			if(vue->combi[num][j].color_index != COULEUR_INDETERMINEE)
 				snprintf(css, sizeof(css), "#button%d { background: %s; }", j, colors[vue->combi[num][j].color_index]);
@@ -217,3 +215,45 @@ void valider_essai_actuel(GtkWidget *widget, gpointer data) {
 
     num--;
 }
+
+
+// Initialise le modèle du jeu de mastermind
+
+void initialiser_combi(vue_t* vue)
+{
+    srand(time(NULL));
+    mastermind_initialiser_avec_secret(&vue->mastermind);
+}
+
+
+/*
+void initialiser_dialog_box(vue_t* vue)
+{
+    m->b_fin_partie = gtk_dialog_new_with_buttons("Le Jeu du Mastermind",
+                                                  GTK_WINDOW(vue->window),
+                                                  GTK_DIALOG_MODAL,
+                                                  GTK_STOCK_OK,
+                                                  GTK_RESPONSE_OK,
+                                                  NULL);
+}
+
+void afficher_fin_partie(GtkWidget *widget, vue_t* vue)
+{
+    gchar chaine[200];
+    GtkWidget* label;
+
+    sprintf(chaine, "Vous avez réussi à trouver le code secret en %d essais !\n", mastermind_get_num_dernier_essai(&vue->mastermind));
+
+    if(mastermind_get_etat(&vue->mastermind) == ETAT_MM_PERDU)
+        g_stpcpy(chaine, "Vous avez perdu ! Vous aurez plus de chance la prochaine fois !");
+
+
+    label = gtk_label_new(chaine);
+    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(vue->b_fin_partie)->vbox), label, TRUE, FALSE, 0);
+
+    // Création, initialisation et destruction de la boîte de dialogue
+    gtk_widget_show_all(vue->b_fin_partie);
+    gtk_dialog_run(GTK_DIALOG(vue->b_fin_partie));
+    gtk_widget_destroy(vue->b_fin_partie);
+}
+*/

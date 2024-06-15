@@ -40,7 +40,12 @@ void on_button_clicked(GtkWidget*, gpointer);
 void set_color(vue_t*, int);
 void on_regles_clicked(GtkWidget*, gpointer);
 void valider_essai_actuel(GtkWidget*, gpointer );
-void initialliser_combi(vue_t* vue);
+void initialiser_modele(vue_t* vue);
+
+
+void on_abandonner_clicked(GtkWidget *widget, gpointer data);
+void on_mode_clicked(GtkWidget *widget, gpointer data);
+
 
 //void afficher_fin_partie(GtkWidget*, vue_t*);
 //void initialiser_dialog_box(vue_t*);

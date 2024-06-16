@@ -2,14 +2,14 @@
 CFLAGS= -Wall --pedantic
 
 # ______________ excecutables
-all: mastermind-demo.exe
+all: main.exe
 
-# mastermind-demo
-mastermind-demo.exe: mastermind-demo.o mastermind.o stat-essai.o combinaison.o 
-	gcc $^ -o $@
+# main.exe
+main.exe: main.o mastermind.o stat-essai.o combinaison.o vue.o controleur.o
+	gcc $^ -o $@ `pkg-config gtk+-3.0 --cflags --libs`
 
-mastermind-demo.o: mastermind-demo.c mastermind.h combinaison.h stat-essai.h
-	gcc -c $< -o $@ $(CFLAGS)
+main.o: main.c mastermind.h combinaison.h stat-essai.h vue.h controleur.h
+	gcc -c $< -o $@ $(CFLAGS) `pkg-config gtk+-3.0 --cflags --libs`
 
 # ______________ objets bibliothèque
 
@@ -24,6 +24,15 @@ combinaison.o: combinaison.c combinaison.h
 # stat-essai
 stat-essai.o: stat-essai.c stat-essai.h
 	gcc -c $< -o $@ $(CFLAGS)
+	
+
+# vue
+vue.o: vue.c vue.h mastermind.h combinaison.h stat-essai.h
+	gcc -c $< -o $@ $(CFLAGS) `pkg-config gtk+-3.0 --cflags --libs`
+	
+# controleur
+controleur.o: controleur.c controleur.h vue.h mastermind.h combinaison.h stat-essai.h
+	gcc -c $< -o $@ $(CFLAGS) `pkg-config gtk+-3.0 --cflags --libs`
 
 # ______________ nettoyage
 clean:

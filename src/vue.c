@@ -4,6 +4,7 @@
 #include "stat-essai.h"
 #include "mastermind.h"
 #include "common.h"
+#include <stdio.h>
 
 const char *colors[] = {
     "red", "green", "blue", "magenta", 
@@ -18,9 +19,9 @@ vue_t* init_vue() {
     }
 
     vue->f = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(vue->f, "Mastermind");
+    gtk_window_set_title(GTK_WINDOW(vue->f), "Mastermind");
     gtk_window_set_default_size(vue->f, 800, 900);
-    gtk_window_set_resizable(GTK_WINDOW(vue->f), FALSE);
+    gtk_window_set_resizable(vue->f, FALSE);
 
     GtkCssProvider *provider = gtk_css_provider_new();
     gtk_css_provider_load_from_data(provider, "button { transition: background-color 0.3s ease; }", -1, NULL);
@@ -58,8 +59,6 @@ vue_t* init_vue() {
         for (int j = 0; j < TAILLE_COMBI; j++) {
             vue->combi[i][j].button = (GtkButton*) gtk_button_new();
             vue->combi[i][j].color_index = COULEUR_INDETERMINEE;
-            //gtk_widget_set_size_request(GTK_WIDGET(vue->combi[i][j].button), 40, 40);
-            //gtk_box_pack_start(vue->b_essai[i], GTK_WIDGET(vue->combi[i][j].button), TRUE, TRUE, 0);
             char button_id[32];
             snprintf(button_id, sizeof(button_id), "button%d_%d", i, j); 
             gtk_widget_set_name(GTK_WIDGET(vue->combi[i][j].button), button_id);
@@ -77,14 +76,10 @@ vue_t* init_vue() {
             vue->button_ind[i][j] = (GtkButton*) gtk_button_new();
             gtk_widget_set_size_request(GTK_WIDGET(vue->button_ind[i][j]), 10, 40);
             gtk_widget_set_sensitive(GTK_WIDGET(vue->button_ind[i][j]), FALSE);
-            gtk_box_pack_start(vue->b_ind[i], GTK_WIDGET(vue->button_ind[i][j]), FALSE, FALSE, 0);
-
-
-            //g_signal_connect(G_OBJECT(vue->combi[i][j].button), "clicked", G_CALLBACK(set_color), &vue);
-
+            gtk_box_pack_start(GTK_BOX(vue->b_ind[i]), GTK_WIDGET(vue->button_ind[i][j]), FALSE, FALSE, 0);
         }
-        gtk_box_pack_start(vue->b_gauche, GTK_WIDGET(vue->b_essai[i]), TRUE, TRUE, 0);
-        gtk_box_pack_start(vue->b_droite, GTK_WIDGET(vue->b_ind[i]), TRUE, TRUE, 0);
+        gtk_box_pack_start(GTK_BOX(vue->b_gauche), GTK_WIDGET(vue->b_essai[i]), TRUE, TRUE, 0);
+        gtk_box_pack_start(GTK_BOX(vue->b_droite), GTK_WIDGET(vue->b_ind[i]), TRUE, TRUE, 0);
         
         // Gestion des marges 
         gtk_widget_set_margin_start(GTK_WIDGET(vue->b_main), 20); 
@@ -99,10 +94,9 @@ vue_t* init_vue() {
     GtkWidget *btn_abandonner = gtk_button_new_with_label("Abandonner");
     GtkWidget *btn_mode = gtk_button_new_with_label("Mode");
 
-    g_signal_connect(G_OBJECT(btn_regles), "clicked", G_CALLBACK(on_regles_clicked), &vue);
-    //g_signal_connect(vue->valider, "clicked", G_CALLBACK(on_valider_clicked), vue);
-    g_signal_connect(G_OBJECT(btn_abandonner), "clicked", G_CALLBACK(on_abandonner_clicked), &vue);
-    g_signal_connect(G_OBJECT(btn_mode), "clicked", G_CALLBACK(on_mode_clicked), &vue);
+    g_signal_connect(G_OBJECT(btn_regles), "clicked", G_CALLBACK(on_regles_clicked), vue);
+    g_signal_connect(G_OBJECT(btn_abandonner), "clicked", G_CALLBACK(on_abandonner_clicked), vue);
+    g_signal_connect(G_OBJECT(btn_mode), "clicked", G_CALLBACK(on_mode_clicked), vue);
 
     // Taille uniforme pour les boutons 
     int button_width = 150;  
@@ -129,11 +123,12 @@ vue_t* init_vue() {
 
     // Ajout de la boîte verticale à la vue
     gtk_box_pack_start(GTK_BOX(vue->b_choix), vbox_buttons, TRUE, FALSE, 0);
-    gtk_box_pack_start(vue->b_plateau, GTK_WIDGET(vue->b_gauche), TRUE, TRUE, 0);
-    gtk_box_pack_start(vue->b_plateau, GTK_WIDGET(vue->b_droite), TRUE, TRUE, 0);
-    gtk_box_pack_start(vue->b_main, GTK_WIDGET(vue->b_choix), TRUE, TRUE, 0);
-    gtk_box_pack_start(vue->b_main, GTK_WIDGET(vue->b_plateau), TRUE, TRUE, 0);
-    gtk_container_add(GTK_CONTAINER(vue->f), GTK_WIDGET(vue->b_main));
+    gtk_box_pack_start(GTK_BOX(vue->b_plateau), GTK_WIDGET(vue->b_gauche), TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(vue->b_plateau), GTK_WIDGET(vue->b_droite), TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(vue->b_main), GTK_WIDGET(vue->b_choix), TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(vue->b_main), GTK_WIDGET(vue->b_plateau), TRUE, TRUE, 0);
+
+    gtk_widget_show_all(GTK_WIDGET(vue->f));
 
     return vue;
 }
@@ -233,45 +228,39 @@ void on_combi_button_clicked(GtkWidget *button, gpointer data) {
     g_object_unref(css_provider);
 }
 
-/*
-void enable(vue_t* vue, int essai_courant) {
-    if (valider_choix(vue, essai_courant)) {
-        // Désactiver les boutons de l'essai courant
-        for (int j = 0; j < TAILLE_COMBI; j++) {
-            gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[essai_courant][j].button), FALSE);
-        }
-        if (essai_courant > 0) { // s'assurer qu'on ne dépasse pas le nombre d'essais
-            for (int j = 0; j < TAILLE_COMBI; j++) {
-                gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[essai_courant-1][j].button), TRUE);
-            }
-        }
+void enable_line(vue_t* vue, int line){
+    for(int i=0; i<TAILLE_COMBI; i++){
+        gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[line][i].button), TRUE);
     }
 }
 
+void disable_line(vue_t* vue, int line){
+    printf("Disable line %d\n", line);
+    for(int i=0; i<TAILLE_COMBI; i++){
+        printf("Disabled block:%d\n", i);
+        gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[line][i].button), FALSE);
+    }
+}
+
+/*
 int valider_choix(vue_t* vue, int essai_courant) {
     int tot = 0;
-    for (int i = 0; i < TAILLE_COMBI; i++) {
+    for (int i = 0; i < TAILLE_COMBI; i++) { 
         if (vue->combi[essai_courant][i].color_index != -1) {
             tot++;
         }
     }
     return (tot == TAILLE_COMBI);
 }
-
+*/
 
 void on_valider_clicked(GtkWidget *widget, gpointer data) {
-    vue_t *vue = (vue_t *)data;
-    int essai_courant = mastermind_get_num_essai_encours(&vue->mastermind); 
-    if (valider_choix(vue, essai_courant)) {
-        enable(vue, essai_courant - 1); // Pour activer l'essai suivant et désactiver l'actuel.
-    } else {
-        // Afficher un message d'erreur si la validation échoue
-        GtkWidget *error_dialog = gtk_message_dialog_new(vue->f, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "Erreur: Vous devez remplir tous les boutons avant de valider.");
-        gtk_dialog_run(GTK_DIALOG(error_dialog));
-        gtk_widget_destroy(error_dialog);
-    }
+    printf("clicked");
+    vue_t *vue = data;
+    int essai_courant = 12;
+    printf("essai courant: %d\n", essai_courant);
+    enable_line(vue, 3);
 }
-*/
 
 /*
 void initialiser_dialog_box(vue_t* vue)

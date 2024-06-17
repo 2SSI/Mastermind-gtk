@@ -1,12 +1,11 @@
 #ifndef CONTROLEUR_H
 #define CONTROLEUR_H
-
 #include "vue.h"
 #include "mastermind.h"
 #include <gtk/gtk.h>
 
 typedef struct{
-	mastermind m;
+	mastermind* m;
 	vue_t* vue;
 }ctrl_t;
 
@@ -19,3 +18,4 @@ void enable(vue_t*, int);
 void disable_all(vue_t*);
 
 #endif
+

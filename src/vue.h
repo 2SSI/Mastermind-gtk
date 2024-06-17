@@ -6,6 +6,13 @@
 #include "mastermind.h"
 #include <gtk/gtk.h>
 #include "common.h"
+#include <gst/gst.h>
+
+#define GAME_STARTED 0
+#define GAME_ENDED 1
+#define PLAYER_MODE 1
+#define COMPUTER_MODE 2
+typedef void (*callback)(void* data);
 
 typedef struct {
     GtkButton* button;
@@ -25,9 +32,13 @@ typedef struct {
     GtkButton* valider;
     buttondata_t combi[NB_ESSAIS + 1][TAILLE_COMBI];
 
-    couleur couleur;
-    mastermind mastermind;
+    mastermind* mastermind;
+    callback on_game_restart;
+    void* controller_state;
     int mode;
+    int rules_open;
+    int line;
+    int game_state;
 } vue_t;
 
 /*
@@ -39,15 +50,22 @@ const char *colors[] = {
 vue_t* init_vue();
 
 void lib_vue(vue_t*);
+void reset(vue_t*);
 void on_regles_clicked(GtkWidget*, gpointer);
-void initialiser_modele(vue_t* vue);
 void on_abandonner_clicked(GtkWidget *widget, gpointer data);
 void on_mode_clicked(GtkWidget *widget, gpointer data);
+void on_rejouer_clicked(GtkWidget *wigdget, gpointer data);
+void on_rules_destroyed(GtkWidget *widget, gpointer data);
 void on_combi_button_clicked(GtkWidget *, gpointer );
-//void on_valider_clicked(GtkWidget *widget, gpointer data);
+void on_valider_clicked(GtkWidget *widget, gpointer data);
 //void enable(vue_t*, int);
 //int valider_choix(vue_t* , int );
 //void afficher_fin_partie(GtkWidget*, vue_t*);
 //void initialiser_dialog_box(vue_t*);
 
+void play_background_music();
+void on_pad_added(GstElement *element, GstPad *pad, gpointer data);
+void play_valider(const char *file_path);
+void play_win();
+//void play_clicked();
 #endif

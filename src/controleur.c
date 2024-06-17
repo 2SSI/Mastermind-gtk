@@ -4,25 +4,44 @@
 #include "combinaison.h"
 #include "vue.h"
 
+void on_game_restart(void* data)
+{
+    vue_t *vue = (vue_t *)data;
+    mastermind_initialiser(vue->mastermind);
+    if(vue->mode == PLAYER_MODE)
+    {
+        mastermind_initialiser_avec_secret(vue->mastermind);
+    }
+    reset(vue);
+}
 
 ctrl_t ctrl_construire(){
-    mastermind m;
+    srand(time(NULL));
+    mastermind* m = malloc(sizeof(mastermind));
     vue_t* vue;
     ctrl_t c;
-    mastermind_initialiser(&m);
+    mastermind_initialiser(m);
+    mastermind_initialiser_avec_secret(m);
     vue = init_vue();
     disable_all(vue);  
     c.m = m;
     c.vue = vue;
+    vue->mastermind = m;
+    vue->on_game_restart = &on_game_restart;
+    vue->controller_state = vue;
     return c;
 }
 
 
 void lib_ctrl(ctrl_t* c){
-	lib_vue(c->vue);
-	if(c != NULL)
-		free(c);
+    if(c != NULL)
+    {
+	    lib_vue(c->vue);
+        free(c->m);
+    }
 }
+
+
 
 ctrl_t ctrl_color(ctrl_t c){
 	if(mastermind_get_etat(&c.m) == ETAT_MM_SECRET){
@@ -64,13 +83,9 @@ int valider_choix(vue_t* vue, int nb_boite) {
         }
     }
     if (tot == TAILLE_COMBI) {
-        g_signal_connect(G_OBJECT(vue->valider), "clicked", G_CALLBACK(on_valider_clicked), vue->b_essai[nb_boite]);
+        // g_signal_connect(G_OBJECT(vue->valider), "clicked", G_CALLBACK(on_valider_clicked), vue->b_essai[nb_boite]);
         return 1;
     }
     return 0;
 }
 
-void on_valider_clicked(GtkWidget *widget, gpointer data) {
-    GtkWidget *essai_box = GTK_WIDGET(data);
-    gtk_widget_set_sensitive(essai_box, FALSE);  
-}

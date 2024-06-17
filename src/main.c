@@ -6,17 +6,16 @@
 #include "controleur.h"
 #include <gtk/gtk.h>
 
-int main(){
+int main(int argc, char *argv[]){
 	
 	ctrl_t c;
 	gtk_init(NULL, NULL);
-
+	gtk_init(&argc, &argv);
+        gst_init(&argc, &argv);
 	c = ctrl_construire();
-	
 	/*c = ctrl_color(c);*/
-	
    	gtk_widget_show_all(GTK_WIDGET(c.vue->f));
-    g_signal_connect(G_OBJECT(c.vue->f), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+        g_signal_connect(G_OBJECT(c.vue->f), "destroy", G_CALLBACK(gtk_main_quit), NULL);
    	gtk_main();
     
     lib_ctrl(&c);

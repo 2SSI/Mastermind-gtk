@@ -4,6 +4,7 @@
 #include "combinaison.h"
 #include "vue.h"
 
+
 void on_game_restart(void* data)
 {
     vue_t *vue = (vue_t *)data;
@@ -43,18 +44,6 @@ void lib_ctrl(ctrl_t* c){
 
 
 
-ctrl_t ctrl_color(ctrl_t c){
-	if(mastermind_get_etat(&c.m) == ETAT_MM_SECRET){
-		int num = mastermind_get_num_essai_encours(&c.m);
-		
-		if(valider_choix(c.vue, num) == 0){
-			//set_color(c.vue, num);
-		}
-		enable(c.vue, num);	
-	}
-	return c;
-}
-
 void disable_all(vue_t* vue) {
     for (int i = 0; i < NB_ESSAIS; i++) {  
         if (i != NB_ESSAIS) {  
@@ -64,28 +53,3 @@ void disable_all(vue_t* vue) {
         }
     }
 }
-
-
-
-void enable(vue_t* vue, int nb_boite) {
-    if (valider_choix(vue, nb_boite + 1) == 1) {
-        for (int j = 0; j < TAILLE_COMBI; j++) {
-            gtk_widget_set_sensitive(GTK_WIDGET(vue->combi[nb_boite][j].button), TRUE);
-        }
-    }
-}
-
-int valider_choix(vue_t* vue, int nb_boite) {
-    int tot = 0;
-    for (int i = 0 ; i < TAILLE_COMBI+1; i++) {
-        if (vue->combi[nb_boite][i].color_index != -1) {
-            tot++;
-        }
-    }
-    if (tot == TAILLE_COMBI) {
-        // g_signal_connect(G_OBJECT(vue->valider), "clicked", G_CALLBACK(on_valider_clicked), vue->b_essai[nb_boite]);
-        return 1;
-    }
-    return 0;
-}
-

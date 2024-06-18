@@ -4,18 +4,20 @@
 #include "mastermind.h"
 #include <gtk/gtk.h>
 
+// Définition de la structure du contrôleur
+
 typedef struct{
 	mastermind* m;
 	vue_t* vue;
 }ctrl_t;
 
+// Fonction d'initialisation du contrôleur
 ctrl_t ctrl_construire();
-ctrl_t ctrl_color(ctrl_t);
+
+// Fonction pour libérer la mémoire
 void lib_ctrl(ctrl_t*);
-int valider_choix(vue_t*, int);
-void on_valider_clicked(GtkWidget*, gpointer);
-void enable(vue_t*, int);
+
+// Fonction qui désactive toutes les boîtes essais sauf la première
 void disable_all(vue_t*);
 
 #endif
-

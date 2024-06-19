@@ -1,4 +1,4 @@
-# Mastermind-gtk
+# 🪅 Mastermind GTK 3.0
 
 Graphic user interface of mastermind game in C using GTK 3.0 library.
 

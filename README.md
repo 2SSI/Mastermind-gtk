@@ -2,7 +2,7 @@
 
 Graphic user interface of mastermind game in C using GTK 3.0 library.
 
-https://github.com/I2S9/Mastermind-GTK/assets/111307883/270eab5d-3300-4abf-b034-b067d4b26dff
+https://github.com/I2S9/Mastermind-GTK/assets/111307883/d15fa269-5c49-415b-8f03-60af5fe57664
 
 ## Requirements 
 

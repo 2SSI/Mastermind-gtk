@@ -2,15 +2,11 @@
 
 Graphic user interface of mastermind game in C using GTK 3.0 library.
 
-
-![mastermind](https://github.com/2SSI/Mastermind-gtk/assets/111307883/3cbc8148-d54d-4a3b-84a5-111944183ffd)
-
-
-
+https://github.com/I2S9/Mastermind-GTK/assets/111307883/270eab5d-3300-4abf-b034-b067d4b26dff
 
 ## Requirements 
 
-Download the [GTK 3.0](https://www.gtk.org/docs/installations/index) version from your favorite OS.
+1. Download the [GTK 3.0](https://www.gtk.org/docs/installations/index) version from your favorite OS.
 
 2. Install Gstreamer library for song and uncomment lines that refers to it
 
@@ -20,3 +16,18 @@ Download the [GTK 3.0](https://www.gtk.org/docs/installations/index) version fro
 
         make all
         ./main.exe
+
+## Further Step
+
+- Enhance the graphic user interface.
+
+- Create a score (indicator) for the user for the purpose of read his performance and his logical mind. 
+
+- Improved user experience for avoid that the latter has to click several times to change the color of the buttons
+of the combination.
+
+- Display in a graphical window of the history of Scores/performance of the user to measure its evolution during the game
+
+- Modification of the function that randomly generates the secret combination to introduce different difficulty levels, making the game more interesting
+
+- Creation of a stopwatch to evaluate for each the length of time it takes the user (or the machine) to find the secret combination.
